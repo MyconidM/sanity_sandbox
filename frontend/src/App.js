@@ -1,21 +1,29 @@
 import logo from './logo.svg';
 import './App.css';
+import { fetchAllProducts } from './lib/sanity/productServices';
+import {useEffect, useState} from 'react'
+import FrontPage from './pages/FrontPage';
+import {Routes, Route} from 'react-router-dom'
 
 function App() {
-
-  let PROJECTID = 'zbe425my'
-  let DATASET = 'production'
-  let QUERY = encodeURIComponent('*[_type == "products"]') //*= hent alle av typen innholdet i []
   
-  let URL = `https://${PROJECTID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}`
+  const [prods, setProds] = useState(null)
 
-  fetch(URL)
-  .then(results => results.json())
-  .then(({result}) => {console.log(result)})
+  const getProducts = async () => {
+    const data = await fetchAllProducts()
+    setProds(data)
+  }
+
+  useEffect(() => {
+    getProducts()
+  }, [])
+
+  //console.log(prods)
 
   return (
-      <h1>Innhold fra sanity</h1>
-
+    <Routes>
+      <Route index element={<FrontPage products={prods}/>}/>
+    </Routes>
     )
 }
 
